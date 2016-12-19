@@ -207,8 +207,8 @@ static const void *kCompletionKey = @"kCompletionKey";
             //  设置circle1变化的值
             CGFloat centerDistance = [self distanceWithPoint1:self.circle1.center andPoint2:pan.view.center];
             CGFloat scale = 1- centerDistance/(MAXDistance*pan.view.bounds.size.height);
-            if (scale < 0.2) {
-                scale = 0.2;
+            if (scale < 0.4) {
+                scale = 0.4;
             }
             self.circle1.transform = CGAffineTransformMakeScale(scale, scale);
             
@@ -350,15 +350,25 @@ static const void *kCompletionKey = @"kCompletionKey";
     CGPoint pointB = CGPointMake(x1 + r1 * cosDegree, y1 - r1 * sinDegree);
     CGPoint pointC = CGPointMake(x2 + r2 * cosDegree, y2 - r2 * sinDegree);
     CGPoint pointD = CGPointMake(x2 - r2 * cosDegree, y2 + r2 * sinDegree);
-    CGPoint pointN = CGPointMake(pointB.x + (distance / 2) * sinDegree, pointB.y + (distance / 2) * cosDegree);
-    CGPoint pointM = CGPointMake(pointA.x + (distance / 2) * sinDegree, pointA.y + (distance / 2) * cosDegree);
+    CGPoint pointP = CGPointMake(pointB.x + (distance / 2) * sinDegree, pointB.y + (distance / 2) * cosDegree);
+    CGPoint pointO = CGPointMake(pointA.x + (distance / 2) * sinDegree, pointA.y + (distance / 2) * cosDegree);
     
     UIBezierPath *path = [UIBezierPath bezierPath];
     [path moveToPoint: pointA];
     [path addLineToPoint: pointB];
-    [path addQuadCurveToPoint: pointC controlPoint: pointN];
+    
+    if (distance>r1+r2) {
+        [path addQuadCurveToPoint: pointC controlPoint: CGPointMake(pointP.x-r1*cosDegree, pointP.y+r1*sinDegree)];
+    }else{
+        [path addQuadCurveToPoint: pointC controlPoint: pointP];
+    }
     [path addLineToPoint: pointD];
-    [path addQuadCurveToPoint: pointA controlPoint: pointM];
+    
+    if (distance >r1+r2) {
+        [path addQuadCurveToPoint: pointA controlPoint: CGPointMake(pointO.x+r1*cosDegree, pointO.y-r1*sinDegree)];
+    }else{
+        [path addQuadCurveToPoint: pointA controlPoint: pointO];
+    }
     
     [self getShapeLayer].path = path.CGPath;
 }
