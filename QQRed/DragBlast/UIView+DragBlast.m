@@ -220,7 +220,7 @@ static const void *kCompletionKey = @"kCompletionKey";
                 
             }else{
                 self.circle1.hidden = NO;
-                [self reloadBeziePath];
+                [self reloadBeziePath:1-scale];
             }
 
         }
@@ -332,7 +332,7 @@ static const void *kCompletionKey = @"kCompletionKey";
     return sqrt(offSetX*offSetX + offSetY*offSetY);
 }
 #pragma mark - 绘制贝塞尔图形
-- (void) reloadBeziePath {
+- (void) reloadBeziePath:(CGFloat)scale {
     CGFloat r1 = self.circle1.frame.size.width / 2.0f;
     CGFloat r2 = self.frame.size.width / 2.0f;
     
@@ -357,19 +357,24 @@ static const void *kCompletionKey = @"kCompletionKey";
     [path moveToPoint: pointA];
     [path addLineToPoint: pointB];
     
+    [path addQuadCurveToPoint: pointC controlPoint: CGPointMake(pointP.x-r1*cosDegree*scale, pointP.y+r1*sinDegree*scale)];
+    /*
     if (distance>r1+r2) {
-        [path addQuadCurveToPoint: pointC controlPoint: CGPointMake(pointP.x-r1*cosDegree, pointP.y+r1*sinDegree)];
+        [path addQuadCurveToPoint: pointC controlPoint: CGPointMake(pointP.x-r1*cosDegree*scale, pointP.y+r1*sinDegree*scale)];
     }else{
         [path addQuadCurveToPoint: pointC controlPoint: pointP];
     }
+     */
     [path addLineToPoint: pointD];
     
+    [path addQuadCurveToPoint: pointA controlPoint: CGPointMake(pointO.x+r1*cosDegree*scale, pointO.y-r1*sinDegree*scale)];
+    /*
     if (distance >r1+r2) {
-        [path addQuadCurveToPoint: pointA controlPoint: CGPointMake(pointO.x+r1*cosDegree, pointO.y-r1*sinDegree)];
+        [path addQuadCurveToPoint: pointA controlPoint: CGPointMake(pointO.x+r1*cosDegree*scale, pointO.y-r1*sinDegree*scale)];
     }else{
         [path addQuadCurveToPoint: pointA controlPoint: pointO];
     }
-    
+    */
     [self getShapeLayer].path = path.CGPath;
 }
 
