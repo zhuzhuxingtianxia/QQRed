@@ -166,7 +166,6 @@
                 rect.origin.x -= (tagView.frame.size.width + space);
                 view.frame = rect;
             }
-        } completion:^(BOOL finished) {
             if (lastTagView) {
                 CGSize contentSize = self.tagScrollView.contentSize;
                 CGFloat maxX = CGRectGetMaxX(lastTagView.frame) + leftSpace;//多加12（距离右边的距离）
@@ -175,18 +174,13 @@
                 }else{
                     contentSize.width = 375;
                 }
-               
+                
                 _curentContentSize = contentSize;
                 self.tagScrollView.contentSize = _curentContentSize;
-//
-//                [self performSelector:@selector(afterSetContentSize) withObject:nil afterDelay:1];
-            
-//                if (_curentContentSize.width - self.tagScrollView.frame.size.width < self.tagScrollView.contentOffset.x) {
-//                    NSLog(@"a =%f 偏移量b=%f", _curentContentSize.width - self.tagScrollView.frame.size.width,self.tagScrollView.contentOffset.x);
-//                    [self.tagScrollView setContentOffset:CGPointMake(self.tagScrollView.contentOffset.x -(_curentContentSize.width - self.tagScrollView.frame.size.width), 0) animated:YES];
-//                    
-//                }
             }
+
+        } completion:^(BOOL finished) {
+            
         }];
        
         
@@ -247,7 +241,7 @@
         _sureBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         _sureBtn.frame = CGRectMake(20, (bottomRect.size.height - height)/2.f, bottomRect.size.width - 20*2, height);
         [_sureBtn setTitle:@"确定" forState:0];
-        [_sureBtn setTitleColor:[UIColor whiteColor] forState:0];
+        [_sureBtn setTitleColor:[UIColor redColor] forState:0];
         _sureBtn.backgroundColor = [UIColor groupTableViewBackgroundColor];
         _sureBtn.titleLabel.font = [UIFont systemFontOfSize:13.f];
         _sureBtn.layer.cornerRadius = 2.5f;
