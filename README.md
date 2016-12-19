@@ -13,6 +13,5 @@
       若爆炸后需要做一些处理，则可使用下面的block方法。<br>
     */<br>
      [view blastCompletion:^(BOOL finished) {<br>
-        //do something
-        
+        //do something  
     }];
