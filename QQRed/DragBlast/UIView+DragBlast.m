@@ -83,6 +83,7 @@ static const void *kCompletionKey = @"kCompletionKey";
 @implementation UIView (DragBlast)
 
 #pragma mark - setters
+
 -(void)setTapBlast:(BOOL)tapBlast{
     objc_setAssociatedObject(self, (__bridge const void *)(kTapBlastKey), [NSNumber numberWithBool:tapBlast], OBJC_ASSOCIATION_COPY_NONATOMIC);
     self.userInteractionEnabled = YES;
@@ -123,6 +124,10 @@ static const void *kCompletionKey = @"kCompletionKey";
     
 }
 
+-(void)setIsFragment:(BOOL)isFragment{
+    objc_setAssociatedObject(self, @selector(isFragment), [NSNumber numberWithBool:isFragment], OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
 #pragma mark - getters
 -(BOOL)tapBlast{
     return [objc_getAssociatedObject(self, (__bridge const void *)(kTapBlastKey)) boolValue];
@@ -130,6 +135,10 @@ static const void *kCompletionKey = @"kCompletionKey";
 
 -(BOOL)dragBlast{
     return [objc_getAssociatedObject(self, (__bridge const void *)(kDragBlastKey)) boolValue];
+}
+
+-(BOOL)isFragment{
+    return [objc_getAssociatedObject(self, @selector(isFragment)) boolValue];
 }
 
 -(CAShapeLayer*)getShapeLayer{
@@ -151,7 +160,12 @@ static const void *kCompletionKey = @"kCompletionKey";
         tap.view.hidden = YES;
         self.circle1.hidden = YES;
         self.originalPoint = tap.view.center;
-        [self aViewBlastEffect:tap];
+        if (self.isFragment) {
+            [self boomCells:tap.view.center];
+        }else{
+            [self aViewBlastEffect:tap];
+        }
+        
     }else{
         self.transform = CGAffineTransformMakeScale(1.1, 1.1);
         [UIView animateWithDuration:0.3 delay:0 usingSpringWithDamping:0.2 initialSpringVelocity:0 options:UIViewAnimationOptionCurveLinear animations:^{
@@ -181,7 +195,7 @@ static const void *kCompletionKey = @"kCompletionKey";
     
     pan.view.center= p;
     [pan setTranslation:CGPointZero inView:window];
-    
+    //求绝对值
     CGFloat  fx = fabs(self.originalPoint.x- p.x);
     CGFloat  fy = fabs(self.originalPoint.y- p.y);
     
@@ -232,7 +246,11 @@ static const void *kCompletionKey = @"kCompletionKey";
                 
                 pan.view.hidden = YES;
                 
-                [self aViewBlastEffect:pan];
+                if (self.isFragment) {
+                    [self boomCells:pan.view.center];
+                }else{
+                   [self aViewBlastEffect:pan];
+                }
                 
             }else{
                 self.circle1.hidden = YES;
@@ -329,7 +347,8 @@ static const void *kCompletionKey = @"kCompletionKey";
 - (CGFloat)distanceWithPoint1:(CGPoint)point1  andPoint2:(CGPoint)point2{
     CGFloat offSetX = point1.x - point2.x;
     CGFloat offSetY = point1.y - point2.y;
-    return sqrt(offSetX*offSetX + offSetY*offSetY);
+    //平方根sqrt(9) = 3  N次方pow(2,N)表示2的N次方
+    return sqrt(pow(offSetX, 2) + pow(offSetY, 2));
 }
 #pragma mark - 绘制贝塞尔图形
 - (void) reloadBeziePath:(CGFloat)scale {
@@ -378,6 +397,76 @@ static const void *kCompletionKey = @"kCompletionKey";
     [self getShapeLayer].path = path.CGPath;
 }
 
+#pragma mark ============= CALayer实现粒子爆炸动画
+
+-(void)boomCells:(CGPoint)point{
+    NSInteger rowClocn = 3;
+    NSMutableArray *boomCells = [NSMutableArray array];
+    for (int i = 0; i < rowClocn*rowClocn; ++ i) {
+        CGFloat pw = MIN(self.frame.size.width, self.frame.size.height);
+        CALayer *shape = [CALayer layer];
+        shape.backgroundColor = [UIColor colorWithRed:231/255.0 green:231/255.0 blue:231/255.0 alpha:1.0].CGColor;
+        shape.cornerRadius = pw / 2;
+        //shape.frame = CGRectMake((i/rowClocn) * pw, (i%rowClocn) * pw, pw, pw);
+        shape.frame = CGRectMake(0, 0, pw, pw);
+        [self.layer.superlayer addSublayer: shape];
+        [boomCells addObject: shape];
+    }
+    [self cellAnimation:boomCells];
+}
+- (void) cellAnimation:(NSArray*)cells {
+    
+    for (NSInteger j=0; j<cells.count;j++) {
+        CALayer *shape = cells[j];
+        shape.position = self.center;
+        CAAnimationGroup *animationGroup = [CAAnimationGroup animation];
+        
+        CABasicAnimation *scaleAnimation = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
+        scaleAnimation.toValue = @0.6;
+        
+        CAKeyframeAnimation *pathAnimation = [CAKeyframeAnimation animationWithKeyPath: @"position"];
+        pathAnimation.path = [self makeRandomPath: shape AngleTransformation:j].CGPath;
+        pathAnimation.timingFunction = [CAMediaTimingFunction functionWithName: kCAMediaTimingFunctionEaseOut];
+        
+        animationGroup.animations = @[scaleAnimation,pathAnimation,];
+        animationGroup.fillMode = kCAFillModeForwards;
+        animationGroup.duration = 0.5;
+        animationGroup.removedOnCompletion = NO;
+        animationGroup.repeatCount = 1;
+        
+        [shape addAnimation: animationGroup forKey: @"animationGroup"];
+        [self performSelector:@selector(removeLayer:) withObject:shape afterDelay:animationGroup.duration];
+    }
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.6 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (self.completion) {
+            self.completion(self.hidden);
+        }
+    });
+    
+}
+-(void)removeLayer:(CALayer*)layer{
+    [layer removeAnimationForKey:@"animationGroup"];
+    layer.hidden = YES;
+    [layer removeFromSuperlayer];
+    
+}
+
+#pragma mark - 设置碎片路径
+- (UIBezierPath *) makeRandomPath: (CALayer *) alayer AngleTransformation:(CGFloat)index{
+    UIBezierPath *path = [UIBezierPath bezierPath];
+    [path moveToPoint:self.center];
+    CGFloat dia = self.frame.size.width;
+    if (index>0) {
+        CGFloat angle = index*45*M_PI*2/360;
+        CGFloat x = dia*cosf(angle);
+        CGFloat y = dia*sinf(angle);
+        [path addLineToPoint:CGPointMake(self.center.x + x, self.center.y+y)];
+    }else{
+        [path addLineToPoint:CGPointMake(self.center.x, self.center.y)];
+    }
+    
+    return path;
+}
 
 
 @end

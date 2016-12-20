@@ -48,6 +48,7 @@
     redView.text = @"1";
     redView.tag = 110;
     redView.tapBlast = YES;
+    redView.isFragment = YES;
     [redView blastCompletion:^(BOOL finished) {
         TableViewController *table = [[TableViewController alloc] init];
         
@@ -153,7 +154,6 @@
     if (fx>MAXDistance*circle2.bounds.size.height || fy>MAXDistance*circle2.bounds.size.height) {
         self.shapeLayer.path = nil;
         self.circle1.hidden = YES;
-        // [self boom:pan.view];
     }else{
         self.circle1.hidden = NO;
         [self reloadBeziePath];
@@ -163,7 +163,17 @@
         CGFloat  fx = fabs(_remindPoint.x- newCenter.x);
         CGFloat  fy = fabs(_remindPoint.y- newCenter.y);
         if (fx>MAXDistance*circle2.bounds.size.height || fy>MAXDistance*circle2.bounds.size.height) {
-           // [self boom:pan.view];
+            [self boomCells:pan.view.center];
+            /*
+            NSInteger k = arc4random()%2;
+            if (k==1) {
+                //位图移动
+                [self boomCells:pan.view.center];
+            }else{
+                //粒子束运动
+                [self boom:pan.view];
+            }
+            */
         }else{
             [self.shapeLayer removeFromSuperlayer];
             self.shapeLayer = nil;
@@ -227,6 +237,73 @@
     return _shapeLayer;
 }
 
+#pragma mark - 粒子添加及动画
+-(void)boomCells:(CGPoint)point{
+    NSInteger rowClocn = 3;
+    NSMutableArray *boomCells = [NSMutableArray array];
+    for (int i = 0; i < rowClocn*rowClocn; ++ i) {
+        CGFloat pw = MIN(circle2.frame.size.width, circle2.frame.size.height);
+        CALayer *shape = [CALayer layer];
+        shape.backgroundColor = [UIColor colorWithRed:231/255.0 green:231/255.0 blue:231/255.0 alpha:1.0].CGColor;
+        shape.cornerRadius = pw / 2;
+        //shape.frame = CGRectMake((i/rowClocn) * pw, (i%rowClocn) * pw, pw, pw);
+        shape.frame = CGRectMake(0, 0, pw, pw);
+        [circle2.layer.superlayer addSublayer: shape];
+        [boomCells addObject: shape];
+    }
+    circle2.hidden = YES;
+    [self cellAnimation:boomCells];
+}
+- (void) cellAnimation:(NSArray*)cells {
+    
+    for (NSInteger j=0; j<cells.count;j++) {
+        CALayer *shape = cells[j];
+        shape.position = circle2.center;
+        CAAnimationGroup *animationGroup = [CAAnimationGroup animation];
+        
+        CABasicAnimation *scaleAnimation = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
+        scaleAnimation.toValue = @0.5;
+        
+        CAKeyframeAnimation *pathAnimation = [CAKeyframeAnimation animationWithKeyPath: @"position"];
+        pathAnimation.path = [self makeRandomPath: shape AngleTransformation:j].CGPath;
+        pathAnimation.timingFunction = [CAMediaTimingFunction functionWithName: kCAMediaTimingFunctionEaseOut];
+        
+        animationGroup.animations = @[scaleAnimation,pathAnimation,];
+        animationGroup.fillMode = kCAFillModeForwards;
+        animationGroup.duration = 0.5;
+        animationGroup.removedOnCompletion = NO;
+        animationGroup.repeatCount = 1;
+        
+        [shape addAnimation: animationGroup forKey: @"animationGroup"];
+        [self performSelector:@selector(removeLayer:) withObject:shape afterDelay:animationGroup.duration];
+    }
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.6 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        circle2.hidden = NO;
+    });
+    
+}
+-(void)removeLayer:(CALayer*)layer{
+    [layer removeFromSuperlayer];
+}
+#pragma mark - 设置碎片路径
+- (UIBezierPath *) makeRandomPath: (CALayer *) alayer AngleTransformation:(CGFloat)index{
+    UIBezierPath *path = [UIBezierPath bezierPath];
+    [path moveToPoint:circle2.center];
+    CGFloat dia = circle2.frame.size.width;
+    if (index>0) {
+        CGFloat angle = index*45*M_PI*2/360;
+        CGFloat x = dia*cosf(angle);
+        CGFloat y = dia*sinf(angle);
+        [path addLineToPoint:CGPointMake(circle2.center.x + x, circle2.center.y+y)];
+    }else{
+        [path addLineToPoint:CGPointMake(circle2.center.x, circle2.center.y)];
+    }
+    
+    return path;
+}
+
+#pragma mark -- 粒子发射
 -(void)boom:(UIView*)view{
     //生成粒子发射器
     CAEmitterLayer *emitter = [CAEmitterLayer layer];
@@ -238,12 +315,17 @@
     emitter.emitterMode = kCAEmitterLayerSurface;
     //发射位置
     emitter.emitterPosition = CGPointMake(emitter.frame.size.width / 2.0, emitter.frame.size.height / 2.0);
+
     
+    CALayer *shape = [CALayer layer];
+    shape.bounds = view.bounds;
+    shape.backgroundColor = [UIColor colorWithRed:231/255.0 green:231/255.0 blue:231/255.0 alpha:1.0].CGColor;
+    shape.cornerRadius = view.bounds.size.height / 2;
     //生成粒子资源
     CGSize size = CGSizeMake(view.bounds.size.width, view.bounds.size.height);
     UIGraphicsBeginImageContext(size);
     CGContextRef context = UIGraphicsGetCurrentContext();
-    [view.layer renderInContext:context];
+    [shape renderInContext:context];
     UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
@@ -254,17 +336,18 @@
     //每秒生产的离子数
     cell.birthRate = 150;
     //离子的生命周期
-    cell.lifetime = 5.0;
-    cell.color = view.backgroundColor.CGColor;
+    cell.lifetime = 0.3;
+    cell.color = [UIColor colorWithRed:231/255.0 green:231/255.0 blue:231/255.0 alpha:1.0].CGColor;
     cell.alphaSpeed = -0.4;
     //速度和范围
     cell.velocity = 50;
-    cell.velocityRange = 50;
+    cell.velocityRange = img.size.height*2;
     //粒子的辐射范围
     cell.emissionRange = M_PI * 2.0;
     
     //添加粒子
     emitter.emitterCells = @[cell];
+    [self performSelector:@selector(removeLayer:) withObject:emitter afterDelay:cell.lifetime];
 }
 
 - (void)didReceiveMemoryWarning {

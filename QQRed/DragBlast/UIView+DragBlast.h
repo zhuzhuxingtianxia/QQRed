@@ -9,7 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface UIView (DragBlast)
-
+//是否使用粒子动画 
+@property(nonatomic,assign)BOOL  isFragment;
 //点击爆炸  默认为NO
 @property(nonatomic,assign)BOOL  tapBlast;
 //拖拽爆炸  默认为NO
