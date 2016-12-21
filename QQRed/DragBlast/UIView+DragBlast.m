@@ -161,7 +161,7 @@ static const void *kCompletionKey = @"kCompletionKey";
         self.circle1.hidden = YES;
         self.originalPoint = tap.view.center;
         if (self.isFragment) {
-            [self boomCells:tap.view.center];
+            [self boomCellsInGesture:tap];
         }else{
             [self aViewBlastEffect:tap];
         }
@@ -221,12 +221,7 @@ static const void *kCompletionKey = @"kCompletionKey";
             //  设置circle1变化的值
             CGFloat centerDistance = [self distanceWithPoint1:self.circle1.center andPoint2:pan.view.center];
             CGFloat scale = 1- centerDistance/(MAXDistance*pan.view.bounds.size.height);
-            if (scale < 0.4) {
-                scale = 0.4;
-            }
-            self.circle1.transform = CGAffineTransformMakeScale(scale, scale);
-            
-            if (fx>MAXDistance*pan.view.bounds.size.height || fy>MAXDistance*pan.view.bounds.size.height) {
+            if (centerDistance >MAXDistance*pan.view.bounds.size.height) {
                 self.shapeLayer.path = nil;
                 //[self.shapeLayer removeFromSuperlayer];
                 //self.shapeLayer = nil;
@@ -237,6 +232,11 @@ static const void *kCompletionKey = @"kCompletionKey";
                 [self reloadBeziePath:1-scale];
             }
 
+            if (scale < 0.4) {
+                scale = 0.4;
+            }
+            self.circle1.transform = CGAffineTransformMakeScale(scale, scale);
+            
         }
             break;
         case UIGestureRecognizerStateEnded:
@@ -247,7 +247,7 @@ static const void *kCompletionKey = @"kCompletionKey";
                 pan.view.hidden = YES;
                 
                 if (self.isFragment) {
-                    [self boomCells:pan.view.center];
+                    [self boomCellsInGesture:pan];
                 }else{
                    [self aViewBlastEffect:pan];
                 }
@@ -347,7 +347,7 @@ static const void *kCompletionKey = @"kCompletionKey";
 - (CGFloat)distanceWithPoint1:(CGPoint)point1  andPoint2:(CGPoint)point2{
     CGFloat offSetX = point1.x - point2.x;
     CGFloat offSetY = point1.y - point2.y;
-    //平方根sqrt(9) = 3  N次方pow(2,N)表示2的N次方
+    //平方根sqrt(9) = 3  N次方pow(x,N)表示x的N次方
     return sqrt(pow(offSetX, 2) + pow(offSetY, 2));
 }
 #pragma mark - 绘制贝塞尔图形
@@ -360,7 +360,7 @@ static const void *kCompletionKey = @"kCompletionKey";
     CGFloat x2 = self.center.x;
     CGFloat y2 = self.center.y;
     
-    CGFloat distance = sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+    CGFloat distance = sqrt(pow((x2 - x1), 2) + pow((y2 - y1), 2));
     
     CGFloat sinDegree = (x2 - x1) / distance;
     CGFloat cosDegree = (y2 - y1) / distance;
@@ -399,7 +399,7 @@ static const void *kCompletionKey = @"kCompletionKey";
 
 #pragma mark ============= CALayer实现粒子爆炸动画
 
--(void)boomCells:(CGPoint)point{
+-(void)boomCellsInGesture:(UIGestureRecognizer*)gesture{
     NSInteger rowClocn = 3;
     NSMutableArray *boomCells = [NSMutableArray array];
     for (int i = 0; i < rowClocn*rowClocn; ++ i) {
@@ -412,9 +412,9 @@ static const void *kCompletionKey = @"kCompletionKey";
         [self.layer.superlayer addSublayer: shape];
         [boomCells addObject: shape];
     }
-    [self cellAnimation:boomCells];
+    [self cellAnimations:boomCells withGesture:gesture];
 }
-- (void) cellAnimation:(NSArray*)cells {
+- (void) cellAnimations:(NSArray*)cells withGesture:(UIGestureRecognizer*)gesture{
     
     for (NSInteger j=0; j<cells.count;j++) {
         CALayer *shape = cells[j];
@@ -438,6 +438,24 @@ static const void *kCompletionKey = @"kCompletionKey";
         [self performSelector:@selector(removeLayer:) withObject:shape afterDelay:animationGroup.duration];
     }
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.6 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        UIWindow *window = [[UIApplication sharedApplication] keyWindow];
+        //复位
+        [self.restSuperView addSubview:gesture.view];
+        CGPoint belowFloorPoint = [window convertPoint:self.originalPoint  toView:self.restSuperView];
+        //判断有没有约束和是那种手势
+        if (self.translatesAutoresizingMaskIntoConstraints) {
+            gesture.view.center = belowFloorPoint;
+        }else if([gesture isMemberOfClass:[UIPanGestureRecognizer class]] && !self.translatesAutoresizingMaskIntoConstraints){
+            CGFloat R = self.bounds.size.height/2.0;
+            //创建左边约束
+            NSLayoutConstraint *leftLc = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.restSuperView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:belowFloorPoint.x-R];
+            [self.restSuperView addConstraint:leftLc];
+            //创建顶部约束
+            NSLayoutConstraint *topLc = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.restSuperView attribute:NSLayoutAttributeTop multiplier:1.0 constant:belowFloorPoint.y-R];
+            [self.restSuperView addConstraint:topLc];
+        }
+
+        
         if (self.completion) {
             self.completion(self.hidden);
         }
