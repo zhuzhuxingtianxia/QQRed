@@ -1,7 +1,7 @@
 # QQRed
  demo环境Xcode8.0以上
 ## demo讲解地址 
-<a href = "http://www.jianshu.com/p/54a2b3a7e045"> 简书：ios仿QQ消息拖拽效果</a>
+<a href = "http://www.jianshu.com/p/8d142fb7b983"> 简书：ios仿QQ消息拖拽效果</a>
 ## demo效果展示
 ![image](https://github.com/873391579/QQRed/blob/master/%E5%BD%95%E5%B1%8F1.gif)
 ##使用：
