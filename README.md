@@ -10,6 +10,8 @@
 例如：<br>
     //设置点击就能爆炸，如果不需要可以不设置，这个点击事件没有设置回调方法 <br> 
       view.tapBlast = YES;<br> 
+     //设置使用绘制的爆炸效果，但是这个效果并不理想，建议不用设置这个属性 <br>
+     // view.isFragment = YES;<br>
     /*<br>
       设置拖拽爆炸，如果爆炸后不需要做操作<br>
       则可使用view.dragBlast = YES;<br>
