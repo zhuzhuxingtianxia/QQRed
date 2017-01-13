@@ -27,6 +27,11 @@
     self.messageLable.dragBlast = YES;
 }
 
+-(void)layoutSubviews{
+    [super layoutSubviews];
+    
+}
+
 -(void)transformScal:(UIButton*)sender{
     sender.transform = CGAffineTransformMakeScale(1.2, 1.2);
     //做阻尼震动
@@ -40,7 +45,6 @@
 
 -(void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated{
     [super setHighlighted:highlighted animated:animated];
-    
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

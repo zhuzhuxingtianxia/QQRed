@@ -15,6 +15,7 @@
 		B6356D4B1DFE952E000365B8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6356D491DFE952E000365B8 /* LaunchScreen.storyboard */; };
 		B6356D561DFE952E000365B8 /* QQRedTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B6356D551DFE952E000365B8 /* QQRedTests.m */; };
 		B6356D611DFE952E000365B8 /* QQRedUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = B6356D601DFE952E000365B8 /* QQRedUITests.m */; };
+		B6B408901E0A382000534AFD /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B4088F1E0A382000534AFD /* DetailViewController.m */; };
 		B6FB90901E022E5E005AFDC3 /* unreadBomb_1@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6FB90891E022E5E005AFDC3 /* unreadBomb_1@2x.png */; };
 		B6FB90911E022E5E005AFDC3 /* unreadBomb_2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6FB908A1E022E5E005AFDC3 /* unreadBomb_2@2x.png */; };
 		B6FB90921E022E5E005AFDC3 /* unreadBomb_3@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6FB908B1E022E5E005AFDC3 /* unreadBomb_3@2x.png */; };
@@ -62,6 +63,8 @@
 		B6356D5C1DFE952E000365B8 /* QQRedUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QQRedUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6356D601DFE952E000365B8 /* QQRedUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QQRedUITests.m; sourceTree = "<group>"; };
 		B6356D621DFE952E000365B8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B6B4088E1E0A382000534AFD /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
+		B6B4088F1E0A382000534AFD /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 		B6FB90891E022E5E005AFDC3 /* unreadBomb_1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unreadBomb_1@2x.png"; sourceTree = "<group>"; };
 		B6FB908A1E022E5E005AFDC3 /* unreadBomb_2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unreadBomb_2@2x.png"; sourceTree = "<group>"; };
 		B6FB908B1E022E5E005AFDC3 /* unreadBomb_3@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unreadBomb_3@2x.png"; sourceTree = "<group>"; };
@@ -134,6 +137,8 @@
 				B6356D421DFE952E000365B8 /* ViewController.m */,
 				B6FB90961E023241005AFDC3 /* TableViewController.h */,
 				B6FB90971E023241005AFDC3 /* TableViewController.m */,
+				B6B4088E1E0A382000534AFD /* DetailViewController.h */,
+				B6B4088F1E0A382000534AFD /* DetailViewController.m */,
 				B6FB909B1E024151005AFDC3 /* TableViewCell.h */,
 				B6FB909C1E024151005AFDC3 /* TableViewCell.m */,
 				B6FB909D1E024151005AFDC3 /* TableViewCell.xib */,
@@ -349,6 +354,7 @@
 			files = (
 				B6FB90AD1E03D41C005AFDC3 /* SearchResurltView.m in Sources */,
 				B6FB90AC1E03D41C005AFDC3 /* JATagView.m in Sources */,
+				B6B408901E0A382000534AFD /* DetailViewController.m in Sources */,
 				B6356D431DFE952E000365B8 /* ViewController.m in Sources */,
 				B6FB909E1E024151005AFDC3 /* TableViewCell.m in Sources */,
 				B6356D401DFE952E000365B8 /* AppDelegate.m in Sources */,

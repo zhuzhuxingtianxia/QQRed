@@ -10,7 +10,7 @@
  被拖动的圆则为当前的视图
  */
 //设置最大偏移距离为当前控件的倍数
-#define MAXDistance 3
+#define MAXMultiple 3
 
 #import "UIView+DragBlast.h"
 #import <objc/runtime.h>
@@ -190,14 +190,11 @@ static const void *kCompletionKey = @"kCompletionKey";
         self.originalPoint = topFloorPoint;//pan.view.center;
     }
     
-    CGPoint p = CGPointMake(topFloorPoint.x+ translation.x,
+    CGPoint panPoint = CGPointMake(topFloorPoint.x+ translation.x,
                                     topFloorPoint.y + translation.y);
     
-    pan.view.center= p;
+    pan.view.center= panPoint;
     [pan setTranslation:CGPointZero inView:window];
-    //求绝对值
-    CGFloat  fx = fabs(self.originalPoint.x- p.x);
-    CGFloat  fy = fabs(self.originalPoint.y- p.y);
     
     switch (pan.state) {
         case UIGestureRecognizerStateBegan:
@@ -220,8 +217,8 @@ static const void *kCompletionKey = @"kCompletionKey";
         {
             //  设置circle1变化的值
             CGFloat centerDistance = [self distanceWithPoint1:self.circle1.center andPoint2:pan.view.center];
-            CGFloat scale = 1- centerDistance/(MAXDistance*pan.view.bounds.size.height);
-            if (centerDistance >MAXDistance*pan.view.bounds.size.height) {
+            CGFloat scale = 1- centerDistance/(MAXMultiple*pan.view.bounds.size.height);
+            if (centerDistance >MAXMultiple*pan.view.bounds.size.height) {
                 self.shapeLayer.path = nil;
                 //[self.shapeLayer removeFromSuperlayer];
                 //self.shapeLayer = nil;
@@ -241,9 +238,10 @@ static const void *kCompletionKey = @"kCompletionKey";
             break;
         case UIGestureRecognizerStateEnded:
         {
-    
-            if (fx>MAXDistance*pan.view.bounds.size.height || fy>MAXDistance*pan.view.bounds.size.height) {
-                
+            //求圆心距离
+            CGFloat distance = sqrtf(pow(self.originalPoint.x- panPoint.x, 2)+pow(self.originalPoint.y- panPoint.y, 2));
+            
+            if (distance>MAXMultiple*pan.view.bounds.size.height) {
                 pan.view.hidden = YES;
                 
                 if (self.isFragment) {
