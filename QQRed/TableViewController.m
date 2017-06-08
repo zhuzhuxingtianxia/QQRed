@@ -85,7 +85,7 @@ static NSString * const reuseIdentifier = @"TableViewCell";
 }
 */
 
-/*
+
 #pragma mark - Table view delegate
 
 // In a xib-based application, navigation from a table can be handled in -tableView:didSelectRowAtIndexPath:
@@ -96,7 +96,7 @@ static NSString * const reuseIdentifier = @"TableViewCell";
     
     [self.navigationController pushViewController:detailViewController animated:YES];
 }
-*/
+
 
 /*
 #pragma mark - Navigation

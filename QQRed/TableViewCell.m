@@ -14,6 +14,7 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
     self.messageBtn.layer.cornerRadius = self.messageBtn.bounds.size.height/2;
     self.messageBtn.layer.masksToBounds = YES;
     self.messageBtn.tapBlast = YES;
@@ -45,13 +46,20 @@
 
 -(void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated{
     [super setHighlighted:highlighted animated:animated];
+    if (highlighted) {
+        self.contentView.backgroundColor = [UIColor colorWithRed:204/255.0 green:204/255.0 blue:204/255.0 alpha:1.0];
+    } else {
+        // 增加延迟消失动画效果，提升用户体验
+        [UIView animateWithDuration:0.1 delay:0.1 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            self.contentView.backgroundColor = [UIColor clearColor];
+        } completion:nil];
+    }
+
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
-    self.messageLable.backgroundColor = [UIColor redColor];
-    self.messageBtn.backgroundColor = [UIColor redColor];
-    self.selectionStyle = UITableViewCellSelectionStyleNone;
+    
     // Configure the view for the selected state
 }
 
