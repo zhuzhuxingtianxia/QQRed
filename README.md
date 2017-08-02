@@ -10,6 +10,7 @@
 在文件里找到DragBlast文件夹，然后把该文件夹拖到你的工程中
 ### 然后导入 <#import "UIView+DragBlast.h"> 给对应View设置定义的属性或方法就可以了！
 例如：<br>
+###
     //设置点击就能爆炸，如果不需要可以不设置，这个点击事件没有设置回调方法 <br> 
       view.tapBlast = YES;<br> 
      //设置使用绘制的爆炸效果，但是这个效果并不理想，建议不要设置这个属性 <br>
@@ -22,3 +23,5 @@
      [view blastCompletion:^(BOOL finished) {<br>
         //do something  
     }];
+
+
