@@ -175,8 +175,8 @@
                     contentSize.width = 375;
                 }
                 
-                _curentContentSize = contentSize;
-                self.tagScrollView.contentSize = _curentContentSize;
+                self.curentContentSize = contentSize;
+                self.tagScrollView.contentSize = self.curentContentSize;
             }
 
         } completion:^(BOOL finished) {
@@ -272,7 +272,7 @@
     self.dataArry = [[NSMutableArray alloc] init];
     //做些假数据
     for (int i = 0; i < 10; i ++) {
-        [_dataArry addObject:[NSString stringWithFormat:@"标签🏷%zd",i]];
+        [_dataArry addObject:[NSString stringWithFormat:@"标签🏷%d",i]];
     }
     /*创建选择的标签字典*/
 //    self.selectTagDic = [[NSMutableDictionary alloc] init];

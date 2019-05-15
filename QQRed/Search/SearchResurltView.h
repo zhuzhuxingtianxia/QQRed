@@ -13,7 +13,7 @@
  */
 
 #import <UIKit/UIKit.h>
-typedef void(^dimissSelf)();
+typedef void(^dimissSelf)(void);
 @interface SearchResurltView : UIView
 @property (nonatomic,copy)dimissSelf dimiss;
 - (void)dimiss:(dimissSelf)dimiss;

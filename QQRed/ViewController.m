@@ -31,7 +31,7 @@
     // Do any additional setup after loading the view, typically from a nib.
     self.title = @"点击或拖拽1爆炸，并跳转到下个界面。";
     UIButton *btn = [UIButton buttonWithType:UIButtonTypeSystem];
-    btn.frame = CGRectMake(0, 64, 300, 50);
+    btn.frame = CGRectMake(0, 100, 300, 50);
     btn.titleLabel.numberOfLines = 0;
     btn.titleLabel.textAlignment = NSTextAlignmentCenter;
     [btn setTitle:@"点击这里重新开始" forState:UIControlStateNormal];
@@ -178,7 +178,7 @@
             [self.shapeLayer removeFromSuperlayer];
             self.shapeLayer = nil;
             [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:0.2 initialSpringVelocity:0 options:UIViewAnimationOptionCurveLinear animations:^{
-                circle2.center = self.circle1.center;
+                self->circle2.center = self.circle1.center;
             } completion:^(BOOL finished) {
                 self.circle1.hidden = NO;
             }];
@@ -279,7 +279,7 @@
     }
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.6 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        circle2.hidden = NO;
+        self->circle2.hidden = NO;
     });
     
 }

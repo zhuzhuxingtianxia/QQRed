@@ -14,7 +14,7 @@ enum {
     //...以后再补充
 };
 typedef NSUInteger JATagViewType;
-typedef void(^deleteTagBlock)();
+typedef void(^deleteTagBlock)(void);
 @interface JATagView : UIView
 @property (nonatomic,strong)NSString *tagString;
 @property (nonatomic,strong)deleteTagBlock deleteTag;
