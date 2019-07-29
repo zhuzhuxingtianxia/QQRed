@@ -350,8 +350,13 @@ static const void *kCompletionKey = @"kCompletionKey";
 }
 #pragma mark - 绘制贝塞尔图形
 - (void) reloadBeziePath:(CGFloat)scale {
-    CGFloat r1 = self.circle1.frame.size.width / 2.0f;
-    CGFloat r2 = self.frame.size.width / 2.0f;
+    CGFloat r1 = MAX(self.circle1.frame.size.width, self.circle1.frame.size.height) / 2.0f;
+    CGFloat r2 = MAX(self.frame.size.width, self.frame.size.height) / 2.0f;
+    
+    //宽高不同时，半径的差值
+    CGFloat diffR1 = fabs(self.circle1.frame.size.width - self.circle1.frame.size.height)/2.0;
+    CGFloat diffR2 = fabs(self.frame.size.width - self.frame.size.height)/2.0;
+    
     
     CGFloat x1 = self.circle1.center.x;
     CGFloat y1 = self.circle1.center.y;
@@ -363,10 +368,11 @@ static const void *kCompletionKey = @"kCompletionKey";
     CGFloat sinDegree = (x2 - x1) / distance;
     CGFloat cosDegree = (y2 - y1) / distance;
     
-    CGPoint pointA = CGPointMake(x1 - r1 * cosDegree, y1 + r1 * sinDegree);
-    CGPoint pointB = CGPointMake(x1 + r1 * cosDegree, y1 - r1 * sinDegree);
-    CGPoint pointC = CGPointMake(x2 + r2 * cosDegree, y2 - r2 * sinDegree);
-    CGPoint pointD = CGPointMake(x2 - r2 * cosDegree, y2 + r2 * sinDegree);
+    CGPoint pointA = CGPointMake(x1 - (r1 - diffR1) * cosDegree, y1 + (r1 - diffR1) * sinDegree);
+    CGPoint pointB = CGPointMake(x1 + (r1 - diffR1) * cosDegree, y1 - (r1 - diffR1) * sinDegree);
+    CGPoint pointC = CGPointMake(x2 + (r2 - diffR2) * cosDegree, y2 - (r2 - diffR2) * sinDegree);
+    CGPoint pointD = CGPointMake(x2 - (r2 - diffR2) * cosDegree, y2 + (r2 - diffR2) * sinDegree);
+    
     CGPoint pointP = CGPointMake(pointB.x + (distance / 2) * sinDegree, pointB.y + (distance / 2) * cosDegree);
     CGPoint pointO = CGPointMake(pointA.x + (distance / 2) * sinDegree, pointA.y + (distance / 2) * cosDegree);
     

@@ -25,14 +25,16 @@
 }
 
 -(void)buildView {
-    NSString *title = @"200";
-    UIButton *btn = [UIButton buttonWithType:UIButtonTypeSystem];
+    NSString *title = @"20";
+    UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
     btn.center = self.view.center;
+    btn.titleLabel.font = [UIFont systemFontOfSize:14];
     [btn setBackgroundColor:[UIColor redColor]];
     [btn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [btn setTitle:title forState:UIControlStateNormal];
+    
     CGFloat aWidth = [title boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading|NSStringDrawingTruncatesLastVisibleLine attributes:@{NSFontAttributeName:btn.titleLabel.font} context:nil].size.width;
-    btn.bounds = CGRectMake(0, 0, aWidth+10, 20);
+    btn.bounds = CGRectMake(0, 0, title.length>1?aWidth+10:20, 20);
     [btn addTarget:self action:@selector(btnAction:) forControlEvents:UIControlEventTouchUpInside];
     btn.layer.cornerRadius = 10;
     btn.layer.masksToBounds = YES;
@@ -41,6 +43,22 @@
         NSLog(@"拖拽事件");
     }];
     [self.view addSubview:btn];
+    
+    
+    UIButton *btn1 = [UIButton buttonWithType:UIButtonTypeCustom];
+    btn1.center = CGPointMake(btn.center.x, btn.center.y+100);
+    btn1.titleLabel.font = [UIFont systemFontOfSize:14];
+    [btn1 setBackgroundColor:[UIColor redColor]];
+    
+    btn1.bounds = CGRectMake(0, 0, 20, 25);
+    [btn1 addTarget:self action:@selector(btnAction:) forControlEvents:UIControlEventTouchUpInside];
+    btn1.layer.cornerRadius = 10;
+    btn1.layer.masksToBounds = YES;
+    btn1.tapBlast = YES;
+    [btn1 blastCompletion:^(BOOL finished) {
+        NSLog(@"拖拽事件");
+    }];
+    [self.view addSubview:btn1];
 }
 
 -(void)btnAction:(id)sender{
