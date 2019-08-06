@@ -17,6 +17,7 @@
 {
     UIView *circle2;
 }
+@property (weak, nonatomic) IBOutlet UIButton *testbtn;
 @property(nonatomic,assign)CGPoint           remindPoint;
 @property(nonatomic,strong)UIView           *circle1;
 @property(nonatomic,strong)CAShapeLayer     *shapeLayer;
@@ -57,6 +58,9 @@
     }];
     [self.view addSubview:redView];
     
+    self.testbtn.layer.cornerRadius = 20;
+    self.testbtn.dragBlast = YES;
+    
     [self testDrag];
 }
 
@@ -88,6 +92,8 @@
 -(void)resetSetting:(UIButton*)sender{
     UIView *redView = [self.view viewWithTag:110];
     redView.hidden = NO;
+    
+    self.testbtn.hidden = NO;
 }
 
 -(void)blastAction:(UITapGestureRecognizer*)tap{
