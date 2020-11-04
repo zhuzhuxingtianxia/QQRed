@@ -199,7 +199,8 @@ static const void *kCompletionKey = @"kCompletionKey";
     switch (pan.state) {
         case UIGestureRecognizerStateBegan:
         {
-            self.circle1.bounds = pan.view.bounds;
+            CGFloat HW = MIN(pan.view.bounds.size.height, pan.view.bounds.size.width);
+            self.circle1.bounds = CGRectMake(0, 0, HW, HW);
             self.circle1.layer.cornerRadius = pan.view.layer.cornerRadius;
             self.circle1.layer.masksToBounds = pan.view.layer.masksToBounds;
             self.circle1.backgroundColor = pan.view.backgroundColor;
